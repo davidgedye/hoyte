@@ -47,6 +47,8 @@ const layouts = dzis.map((dzi, index) => {
 });
 
 // Create image specifications with animation
+let introTimeout;
+
 const imageSpecs = layouts.map((layout, index) => {
   const { tileSource, x, y, degrees } = layout;
   const delay = delayPerImage * (index + Math.random() * randomness);
@@ -64,6 +66,18 @@ const imageSpecs = layouts.map((layout, index) => {
         whenFullyLoaded(tiledImage, () => {
           tiledImage.setOpacity(1);
           tiledImage.setPosition(new OpenSeadragon.Point(x, y));
+
+          clearTimeout(introTimeout);
+          introTimeout = setTimeout(() => {
+            const intro = document.querySelector('.intro');
+            if (intro) {
+              intro.style.display = 'block';
+
+              intro.addEventListener('click', () => {
+                intro.style.display = 'none';
+              });
+            }
+          }, 1000);
         });
       }, delay);
     }
