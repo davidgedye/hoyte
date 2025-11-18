@@ -1,4 +1,5 @@
 import { dzis } from './data.js';
+import { whenFullyLoaded } from './util.js';
 
 // Configuration for arranging images
 const rowStarts = [0, 3, 6, 8, 16, 19, 29, 41, 55];
@@ -6,11 +7,17 @@ const rotatedIndexes = [18, 24];
 const xStride = 1.1;
 const yStride = 1.6;
 
-// Code for arranging images
+// Configuration for animation
+const delayPerImage = 25; // milliseconds
+const randomness = 30; // bigger is more random
+
+// Figure out the layouts
 let x = 0;
 let y = 0;
+let maxX = 0;
+let maxY = 0;
 
-const imageSpecs = dzis.map((dzi, index) => {
+const layouts = dzis.map((dzi, index) => {
   if (rowStarts.includes(index)) {
     x = 0;
     y += yStride;
@@ -25,22 +32,57 @@ const imageSpecs = dzis.map((dzi, index) => {
     x += xExtra;
   }
 
-  const imageSpec = {
+  const layout = {
     tileSource: dzi,
     x,
     y,
     degrees
   };
 
+  maxX = Math.max(maxX, x);
+  maxY = Math.max(maxY, y);
+
   x += xStride + xExtra;
+  return layout;
+});
+
+// Create image specifications with animation
+const imageSpecs = layouts.map((layout, index) => {
+  const { tileSource, x, y, degrees } = layout;
+  const delay = delayPerImage * (index + Math.random() * randomness);
+
+  const imageSpec = {
+    tileSource,
+    x: maxX,
+    y: 0,
+    degrees,
+    opacity: 0,
+    preload: true,
+    success: function (event) {
+      const tiledImage = event.item;
+      setTimeout(() => {
+        whenFullyLoaded(tiledImage, () => {
+          tiledImage.setOpacity(1);
+          tiledImage.setPosition(new OpenSeadragon.Point(x, y));
+        });
+      }, delay);
+    }
+  };
+
   return imageSpec;
 });
 
 // Create the viewer
 const options = {
   id: 'osd-container',
-  prefixUrl: 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/2.4.2/images/',
+  prefixUrl: 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/images/',
+  drawer: 'canvas',
   tileSources: imageSpecs
 };
 
 const viewer = OpenSeadragon(options);
+
+viewer.addHandler('open', () => {
+  // Move the viewport to where the images will end up after the animation
+  viewer.viewport.fitBounds(new OpenSeadragon.Rect(0, 0, maxX + xStride, maxY + yStride), true);
+});
