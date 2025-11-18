@@ -1,30 +1,102 @@
+import { dzis } from './data.js';
+import { whenFullyLoaded } from './util.js';
+
+// Configuration for arranging images
+const rowStarts = [0, 3, 6, 8, 16, 19, 29, 41, 55];
+const rotatedIndexes = [18, 24];
+const xStride = 1.1;
+const yStride = 1.6;
+
+// Configuration for animation
+const delayPerImage = 25; // milliseconds
+const randomness = 30; // bigger is more random
+
+// Figure out the layouts
+let x = 0;
+let y = 0;
+let maxX = 0;
+let maxY = 0;
+
+const layouts = dzis.map((dzi, index) => {
+  if (rowStarts.includes(index)) {
+    x = 0;
+    y += yStride;
+  }
+
+  let degrees = 0;
+  let xExtra = 0;
+
+  if (rotatedIndexes.includes(index)) {
+    degrees = 90;
+    xExtra = (yStride - xStride) / 2;
+    x += xExtra;
+  }
+
+  const layout = {
+    tileSource: dzi,
+    x,
+    y,
+    degrees
+  };
+
+  maxX = Math.max(maxX, x);
+  maxY = Math.max(maxY, y);
+
+  x += xStride + xExtra;
+  return layout;
+});
+
+// Create image specifications with animation
+let introTimeout;
+
+const imageSpecs = layouts.map((layout, index) => {
+  const { tileSource, x, y, degrees } = layout;
+  const delay = delayPerImage * (index + Math.random() * randomness);
+
+  const imageSpec = {
+    tileSource,
+    x: maxX,
+    y: 0,
+    degrees,
+    opacity: 0,
+    preload: true,
+    success: function (event) {
+      const tiledImage = event.item;
+      setTimeout(() => {
+        whenFullyLoaded(tiledImage, () => {
+          tiledImage.setOpacity(1);
+          tiledImage.setPosition(new OpenSeadragon.Point(x, y));
+
+          clearTimeout(introTimeout);
+          introTimeout = setTimeout(() => {
+            const intro = document.querySelector('.intro');
+            if (intro) {
+              intro.style.display = 'block';
+
+              intro.addEventListener('click', () => {
+                intro.style.display = 'none';
+              });
+            }
+          }, 1000);
+        });
+      }, delay);
+    }
+  };
+
+  return imageSpec;
+});
+
+// Create the viewer
 const options = {
   id: 'osd-container',
-  prefixUrl:
-    'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/2.4.2/images/',
-  collectionMode: true,
-  collectionRows: 10,
-  //collectionTileMargin: 5, // hardwired gap between images (in pixels for OSD 2.x)
-
-  tileSources: [
-    'jpgs/Page_01.dzi', 'jpgs/Page_02.dzi', 'jpgs/Page_03.dzi', 'jpgs/Page_04.dzi', 'jpgs/Page_05.dzi',
-    'jpgs/Page_06.dzi', 'jpgs/Page_07.dzi', 'jpgs/Page_08.dzi', 'jpgs/Page_09.dzi', 'jpgs/Page_10.dzi',
-    'jpgs/Page_11.dzi', 'jpgs/Page_12.dzi', 'jpgs/Page_13.dzi', 'jpgs/Page_14.dzi', 'jpgs/Page_15.dzi',
-    'jpgs/Page_16.dzi', 'jpgs/Page_17.dzi', 'jpgs/Page_18.dzi', 'jpgs/Page_19.dzi', 'jpgs/Page_20.dzi',
-    'jpgs/Page_21.dzi', 'jpgs/Page_22.dzi', 'jpgs/Page_23.dzi', 'jpgs/Page_24.dzi', 'jpgs/Page_25.dzi',
-    'jpgs/Page_26.dzi', 'jpgs/Page_27.dzi', 'jpgs/Page_28.dzi', 'jpgs/Page_29.dzi', 'jpgs/Page_30.dzi',
-    'jpgs/Page_31.dzi', 'jpgs/Page_32.dzi', 'jpgs/Page_33.dzi', 'jpgs/Page_34.dzi', 'jpgs/Page_35.dzi',
-    'jpgs/Page_36.dzi', 'jpgs/Page_37.dzi', 'jpgs/Page_38.dzi', 'jpgs/Page_39.dzi', 'jpgs/Page_40.dzi',
-    'jpgs/Page_41.dzi', 'jpgs/Page_42.dzi', 'jpgs/Page_43.dzi', 'jpgs/Page_44.dzi', 'jpgs/Page_45.dzi',
-    'jpgs/Page_46.dzi', 'jpgs/Page_47.dzi', 'jpgs/Page_48.dzi', 'jpgs/Page_49.dzi', 'jpgs/Page_50.dzi',
-    'jpgs/Page_51.dzi', 'jpgs/Page_52.dzi', 'jpgs/Page_53.dzi', 'jpgs/Page_54.dzi', 'jpgs/Page_55.dzi',
-    'jpgs/Page_56.dzi', 'jpgs/Page_57.dzi', 'jpgs/Page_58.dzi', 'jpgs/Page_59.dzi', 'jpgs/Page_60.dzi',
-    'jpgs/Page_61.dzi', 'jpgs/Page_62.dzi', 'jpgs/Page_63.dzi', 'jpgs/Page_64.dzi', 'jpgs/Page_65.dzi',
-    'jpgs/Page_66.dzi', 'jpgs/Page_67.dzi', 'jpgs/Page_68.dzi', 'jpgs/Page_69.dzi', 'jpgs/Page_70.dzi',
-    'jpgs/Page_71.dzi', 'jpgs/Page_72.dzi', 'jpgs/Page_73.dzi', 'jpgs/Page_74.dzi', 'jpgs/Page_75.dzi',
-    'jpgs/Page_76.dzi', 'jpgs/Page_77.dzi', 'jpgs/Page_78.dzi', 'jpgs/Page_79.dzi', 'jpgs/Page_80.dzi',
-    'jpgs/Page_81.dzi'
-  ],
+  prefixUrl: 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/images/',
+  drawer: 'canvas',
+  tileSources: imageSpecs
 };
 
 const viewer = OpenSeadragon(options);
+
+viewer.addHandler('open', () => {
+  // Move the viewport to where the images will end up after the animation
+  viewer.viewport.fitBounds(new OpenSeadragon.Rect(0, 0, maxX + xStride, maxY + yStride), true);
+});
