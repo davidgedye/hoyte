@@ -95,6 +95,7 @@ viewer.addHandler('open', () => {
   viewer.viewport.fitBounds(new OpenSeadragon.Rect(0, 0, maxX + xStride, maxY + yStride), true);
 });
 
+// Handle clicks to zoom to images
 viewer.addHandler('canvas-click', (event) => {
   const viewportPos = viewer.viewport.pointFromPixel(event.position);
   const viewportBounds = viewer.viewport.getBounds();
@@ -121,6 +122,42 @@ viewer.addHandler('canvas-click', (event) => {
         imageRec.zoomToFeature(viewer);
       }
       break;
+    }
+  }
+});
+
+// We need to disable the default keyboard panning
+viewer.addHandler('canvas-key', (event) => {
+  event.preventHorizontalPan = true;
+  event.preventVerticalPan = true;
+});
+
+// Add our own key handling for left/right to move between images
+window.addEventListener('keydown', (event) => {
+  if (!['ArrowLeft', 'ArrowRight'].includes(event.code)) {
+    return;
+  }
+
+  let bestFraction = 0;
+  let bestIndex = -1;
+  const viewportBounds = viewer.viewport.getBounds();
+  for (let i = 0; i < imageRecs.length; i++) {
+    const imageRec = imageRecs[i];
+    if (imageRec.isFeatured(viewportBounds)) {
+      const fraction = imageRec.getVisibleFraction(viewportBounds);
+      if (fraction > bestFraction) {
+        bestFraction = fraction;
+        bestIndex = i;
+      }
+    }
+  }
+
+  if (bestIndex !== -1) {
+    const direction = event.code === 'ArrowLeft' ? -1 : 1;
+    const newIndex = bestIndex + direction;
+    if (newIndex >= 0 && newIndex < imageRecs.length) {
+      const newImageRec = imageRecs[newIndex];
+      newImageRec.zoomToFeature(viewer);
     }
   }
 });

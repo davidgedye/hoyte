@@ -55,7 +55,7 @@ export default class ImageRec {
   }
 
   // ----------
-  isFeatured(viewportBounds) {
+  getVisibleFraction(viewportBounds) {
     const { tiledImage } = this;
     if (!tiledImage) {
       return false;
@@ -67,13 +67,26 @@ export default class ImageRec {
       const imageArea = imageBounds.width * imageBounds.height;
       const intersectionArea = intersection.width * intersection.height;
       const visibleFraction = intersectionArea / imageArea;
-      if (
-        visibleFraction > 0.9 &&
-        (imageBounds.width / viewportBounds.width > 0.8 ||
-          imageBounds.height / viewportBounds.height > 0.8)
-      ) {
-        return true;
-      }
+      return visibleFraction;
+    }
+
+    return 0;
+  }
+
+  // ----------
+  isFeatured(viewportBounds) {
+    const { tiledImage } = this;
+    if (!tiledImage) {
+      return false;
+    }
+
+    const imageBounds = tiledImage.getBounds();
+    if (
+      this.getVisibleFraction(viewportBounds) > 0.9 &&
+      (imageBounds.width / viewportBounds.width > 0.8 ||
+        imageBounds.height / viewportBounds.height > 0.8)
+    ) {
+      return true;
     }
 
     return false;
