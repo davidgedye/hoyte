@@ -1,6 +1,6 @@
 import { dzis } from './data.js';
 import ImageRec from './ImageRec.js';
-import { prepareIntro, closeIntro } from './intro.js';
+import { prepareIntro } from './intro.js';
 
 // Configuration for arranging images
 const rowStarts = [0, 3, 6, 8, 16, 19, 29, 41, 55];
