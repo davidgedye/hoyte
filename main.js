@@ -1,5 +1,6 @@
 import { dzis } from './data.js';
 import ImageRec from './ImageRec.js';
+import { prepareIntro, closeIntro } from './intro.js';
 
 // Configuration for arranging images
 const rowStarts = [0, 3, 6, 8, 16, 19, 29, 41, 55];
@@ -38,22 +39,6 @@ const imageRecs = dzis.map((dzi, index) => {
 });
 
 // Create image specifications with animation
-let introTimeout;
-
-function prepareIntro() {
-  clearTimeout(introTimeout);
-  introTimeout = setTimeout(() => {
-    const intro = document.querySelector('.intro');
-    if (intro) {
-      intro.style.display = 'block';
-
-      intro.addEventListener('click', () => {
-        intro.style.display = 'none';
-      });
-    }
-  }, 1000);
-}
-
 const imageSpecs = imageRecs.map((imageRec, index) => {
   const { tileSource, degrees } = imageRec;
 
@@ -67,7 +52,9 @@ const imageSpecs = imageRecs.map((imageRec, index) => {
     success: function (event) {
       const tiledImage = event.item;
       imageRec.tiledImage = tiledImage;
-      imageRec.startAnimation(index, prepareIntro);
+      imageRec.startAnimation(index, () => {
+        prepareIntro(viewer);
+      });
     }
   };
 
