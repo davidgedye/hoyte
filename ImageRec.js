@@ -58,7 +58,7 @@ export default class ImageRec {
   getVisibleFraction(viewportBounds) {
     const { tiledImage } = this;
     if (!tiledImage) {
-      return false;
+      return 0;
     }
 
     const imageBounds = tiledImage.getBounds();
