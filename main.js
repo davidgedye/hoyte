@@ -84,6 +84,10 @@ viewer.addHandler('open', () => {
 
 // Handle clicks to zoom to images
 viewer.addHandler('canvas-click', (event) => {
+  if (!event.quick) {
+    return;
+  }
+
   const viewportPos = viewer.viewport.pointFromPixel(event.position);
   const viewportBounds = viewer.viewport.getBounds();
   for (let i = 0; i < imageRecs.length; i++) {
