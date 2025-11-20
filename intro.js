@@ -14,7 +14,6 @@ export function prepareIntro(viewer) {
       intro.addEventListener('click', closeIntro);
 
       viewer.addOnceHandler('zoom', () => {
-        console.log('Initial zoom done, closing intro');
         closeIntro();
       });
     }
