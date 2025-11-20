@@ -25,7 +25,7 @@ body {
 .intro {
   display: none;
   width: fit-content;
-  max-width: 95%;
+  max-width: 92.5%;
   margin: 0 auto;
   background-color: rgba(255, 255, 255, 0.8);
   padding: 8px 16px;
