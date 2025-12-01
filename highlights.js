@@ -25,6 +25,7 @@ const playButton = document.querySelector('.play-button');
 let isPlaying = false;
 let nextHighlights = [];
 let currentHighlight = null;
+const defaultSpringAnimationTime = 1.2; // seconds
 
 // ----------
 export function getHighlightBounds(highlight) {
@@ -85,9 +86,13 @@ function startNextAnimation() {
 
 // ----------
 export function stopAnimation() {
+  const { viewport } = viewer;
   isPlaying = false;
   playButton.classList.remove('pause');
   TWEEN.removeAll();
+  viewport.centerSpringX.animationTime = defaultSpringAnimationTime;
+  viewport.centerSpringY.animationTime = defaultSpringAnimationTime;
+  viewport.zoomSpring.animationTime = defaultSpringAnimationTime;
 }
 
 // ----------
@@ -107,8 +112,10 @@ playButton.addEventListener('click', () => {
 // ----------
 function animateToRect(viewRect, onComplete) {
   TWEEN.removeAll();
-  const viewBounds = viewer.viewport.getBounds(true);
-  const startZoom = viewer.viewport.getZoom(true);
+
+  const { viewport } = viewer;
+  const viewBounds = viewport.getBounds(true);
+  const startZoom = viewport.getZoom(true);
   const imageWidthZoom = 1 / viewRect.width;
   const imageHeightZoom = 1 / viewBounds.getAspectRatio() / viewRect.height;
   const endZoom = Math.min(imageWidthZoom, imageHeightZoom);
@@ -116,40 +123,43 @@ function animateToRect(viewRect, onComplete) {
 
   let zoomTween;
   if (startZoom < midZoom * 2) {
-    zoomTween = new TWEEN.Tween({ logZoom: Math.log(startZoom) })
-      .to({ logZoom: Math.log(endZoom) }, animationDuration)
-      .easing(TWEEN.Easing.Quadratic.InOut)
-      .onUpdate((data) => {
-        viewer.viewport.zoomTo(Math.exp(data.logZoom), null, true);
-      });
+    const animationSeconds = animationDuration / 1000;
+    viewport.centerSpringX.animationTime = animationSeconds;
+    viewport.centerSpringY.animationTime = animationSeconds;
+    viewport.zoomSpring.animationTime = animationSeconds;
+    viewport.fitBounds(viewRect);
+
+    setTimeout(() => {
+      onComplete();
+    }, animationDuration);
   } else {
     zoomTween = new TWEEN.Tween({ logZoom: Math.log(startZoom) })
       .to({ logZoom: Math.log(midZoom) }, animationDuration / 2)
       .easing(TWEEN.Easing.Quadratic.InOut)
       .onUpdate((data) => {
-        viewer.viewport.zoomTo(Math.exp(data.logZoom), null, true);
+        viewport.zoomTo(Math.exp(data.logZoom), null, true);
       });
 
     const zoomTweenB = new TWEEN.Tween({ logZoom: Math.log(midZoom) })
       .to({ logZoom: Math.log(endZoom) }, animationDuration / 2)
       .easing(TWEEN.Easing.Quadratic.InOut)
       .onUpdate((data) => {
-        viewer.viewport.zoomTo(Math.exp(data.logZoom), null, true);
+        viewport.zoomTo(Math.exp(data.logZoom), null, true);
       });
 
     zoomTween.chain(zoomTweenB);
+
+    const panTween = new TWEEN.Tween(viewBounds.getCenter())
+      .to(viewRect.getCenter(), animationDuration)
+      .easing(TWEEN.Easing.Quadratic.InOut)
+      .onUpdate((point) => {
+        viewport.panTo(point, true);
+      })
+      .onComplete(() => {
+        onComplete();
+      });
+
+    zoomTween.start();
+    panTween.start();
   }
-
-  const panTween = new TWEEN.Tween(viewBounds.getCenter())
-    .to(viewRect.getCenter(), animationDuration)
-    .easing(TWEEN.Easing.Quadratic.InOut)
-    .onUpdate((point) => {
-      viewer.viewport.panTo(point, true);
-    })
-    .onComplete(() => {
-      onComplete();
-    });
-
-  zoomTween.start();
-  panTween.start();
 }
