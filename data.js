@@ -10,8 +10,8 @@ export const dzis = [
       "TileSize": "510",
       "Url": "jpgs/Page_01_files/",
       "Size": {
-        "Height": "2478",
-        "Width": "1819"
+        "Height": "2492",
+        "Width": "1706"
       }
     }
   },
