@@ -1,8 +1,10 @@
 import { dzis } from './data.js';
 import ImageRec from './ImageRec.js';
 import { prepareIntro } from './intro.js';
+import { highlights, getHighlightBounds, stopAnimation } from './highlights.js';
 
 // Configuration for arranging images
+const showHighlights = false;
 const rowStarts = [0, 3, 6, 8, 16, 19, 29, 41, 55];
 const rotatedIndexes = [18, 24];
 const xStride = 1.1;
@@ -14,7 +16,7 @@ let y = 0;
 let maxX = 0;
 let maxY = 0;
 
-const imageRecs = dzis.map((dzi, index) => {
+export const imageRecs = dzis.map((dzi, index) => {
   if (rowStarts.includes(index)) {
     x = 0;
     y += yStride;
@@ -75,15 +77,32 @@ const options = {
   tileSources: imageSpecs
 };
 
-const viewer = OpenSeadragon(options);
+export const viewer = OpenSeadragon(options);
 
 viewer.addHandler('open', () => {
   // Move the viewport to where the images will end up after the animation
   viewer.viewport.fitBounds(new OpenSeadragon.Rect(0, 0, maxX + xStride, maxY + yStride), true);
+
+  if (showHighlights) {
+    // Add highlight overlays
+    for (const highlight of highlights) {
+      const highlightRect = getHighlightBounds(highlight);
+      if (highlightRect) {
+        const overlayElement = document.createElement('div');
+        overlayElement.classList.add('highlight-overlay');
+        viewer.addOverlay({
+          element: overlayElement,
+          location: highlightRect
+        });
+      }
+    }
+  }
 });
 
 // Handle clicks to zoom to images
 viewer.addHandler('canvas-click', (event) => {
+  stopAnimation();
+
   if (!event.quick) {
     return;
   }
