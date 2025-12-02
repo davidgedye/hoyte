@@ -2,6 +2,7 @@ import { dzis } from './data.js';
 import ImageRec from './ImageRec.js';
 import { prepareIntro } from './intro.js';
 import { highlights, getHighlightBounds, stopAnimation } from './highlights.js';
+import { isTouchDevice, hasMouse } from './util.js';
 
 // Configuration for arranging images
 const showHighlights = false;
@@ -68,6 +69,7 @@ const options = {
   id: 'osd-container',
   prefixUrl: 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/images/',
   drawer: 'canvas',
+  showFullPageControl: !isTouchDevice || hasMouse,
   gestureSettingsMouse: {
     clickToZoom: false
   },

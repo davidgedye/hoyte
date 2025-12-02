@@ -1,3 +1,6 @@
+export const isTouchDevice = navigator.maxTouchPoints > 0;
+export const hasMouse = window.matchMedia('(pointer: fine)').matches;
+
 export function whenFullyLoaded(tiledImage, callback) {
   if (tiledImage.getFullyLoaded()) {
     setTimeout(callback, 1); // Asynchronous execution
