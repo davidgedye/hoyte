@@ -25,6 +25,7 @@ const playButton = document.querySelector('.play-button');
 let isPlaying = false;
 let nextHighlights = [];
 let currentHighlight = null;
+let timeout = 0;
 const defaultSpringAnimationTime = 1.2; // seconds
 
 // ----------
@@ -78,7 +79,8 @@ function startNextAnimation() {
       return;
     }
 
-    setTimeout(() => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
       startNextAnimation();
     }, betweenDuration);
   });
@@ -90,9 +92,15 @@ export function stopAnimation() {
   isPlaying = false;
   playButton.classList.remove('pause');
   TWEEN.removeAll();
+  clearTimeout(timeout);
+
   viewport.centerSpringX.animationTime = defaultSpringAnimationTime;
   viewport.centerSpringY.animationTime = defaultSpringAnimationTime;
   viewport.zoomSpring.animationTime = defaultSpringAnimationTime;
+
+  // Interrupt the spring animation if it's happening
+  const viewportBounds = viewport.getBounds(true);
+  viewport.fitBounds(viewportBounds, true);
 }
 
 // ----------
@@ -129,7 +137,8 @@ function animateToRect(viewRect, onComplete) {
     viewport.zoomSpring.animationTime = animationSeconds;
     viewport.fitBounds(viewRect);
 
-    setTimeout(() => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
       onComplete();
     }, animationDuration);
   } else {
