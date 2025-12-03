@@ -18,6 +18,14 @@ export const highlights = [
     y: 0.25,
     width: 0.5,
     height: 0.5
+  },
+  // Adding a very zoomed-in highlight to see how its handled.
+  {
+    imageIndex: 20,
+    x: 0.5,
+    y: 0.5,
+    width: 0.1,
+    height: 0.1
   }
 ];
 
