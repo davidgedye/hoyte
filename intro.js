@@ -1,7 +1,7 @@
+import { isTouchDevice, hasMouse } from './util.js';
+
 let introTimeout;
 
-const isTouchDevice = navigator.maxTouchPoints > 0;
-const hasMouse = window.matchMedia('(pointer: fine)').matches;
 const introDesktop = document.querySelector('.intro-desktop');
 const introMobile = document.querySelector('.intro-mobile');
 const introBoth = document.querySelector('.intro-both');
