@@ -5,7 +5,7 @@ import { highlights, getHighlightBounds, stopAnimation } from './highlights.js';
 import { isTouchDevice, hasMouse } from './util.js';
 
 // Configuration for arranging images
-const showHighlights = true;
+const showHighlights = false;
 const rowStarts = [0, 3, 6, 8, 16, 19, 29, 41, 55, 61, 68];
 const rotatedIndexes = [18, 24];
 const xStride = 1.1;

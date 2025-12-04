@@ -2,7 +2,7 @@ import { shuffle } from './util.js';
 import { imageRecs, viewer } from './main.js';
 
 const animationDuration = 12000; // milliseconds
-const betweenDuration = 2000; // milliseconds
+const betweenDuration = 5000; // milliseconds
 
 // Hand built highlight rects to send the play button to interesting areas of some of the pages.
 export const highlights = [
