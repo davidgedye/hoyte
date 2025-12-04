@@ -2,7 +2,7 @@ import { shuffle } from './util.js';
 import { imageRecs, viewer } from './main.js';
 
 const animationDuration = 15000; // milliseconds
-const betweenDuration = 2000; // milliseconds
+const betweenDuration = 1000; // milliseconds
 
 export const highlights = [
   {
@@ -19,13 +19,13 @@ export const highlights = [
     width: 0.5,
     height: 0.5
   },
-  // Adding a very zoomed-in highlight to see how its handled.
+  // Adding a very zoomed-out highlight to see how its handled.
   {
     imageIndex: 20,
-    x: 0.5,
-    y: 0.5,
-    width: 0.1,
-    height: 0.1
+    x: 0,
+    y: 0,
+    width: 1,
+    height: 1.45 // Guess at height to match aspect ratio
   }
 ];
 
@@ -135,10 +135,11 @@ function animateToRect(viewRect, onComplete) {
   const imageWidthZoom = 1 / viewRect.width;
   const imageHeightZoom = 1 / viewBounds.getAspectRatio() / viewRect.height;
   const endZoom = Math.min(imageWidthZoom, imageHeightZoom);
-  const midZoom = Math.max(startZoom, endZoom) / 5;
+  const midZoom = Math.max(startZoom, endZoom) / 20; //TWEAK THIS FOR MORE ZOOMING OUT
 
   let zoomTween;
-  if (startZoom < midZoom * 2) {
+  if (startZoom < midZoom * 2) { // Experiment with this number.
+    // Linear zoom
     const animationSeconds = animationDuration / 1000;
     viewport.centerSpringX.animationTime = animationSeconds;
     viewport.centerSpringY.animationTime = animationSeconds;
@@ -150,6 +151,7 @@ function animateToRect(viewRect, onComplete) {
       onComplete();
     }, animationDuration);
   } else {
+    // Zoom out then in
     zoomTween = new TWEEN.Tween({ logZoom: Math.log(startZoom) })
       .to({ logZoom: Math.log(midZoom) }, animationDuration / 2)
       .easing(TWEEN.Easing.Quadratic.InOut)
@@ -168,7 +170,7 @@ function animateToRect(viewRect, onComplete) {
 
     const panTween = new TWEEN.Tween(viewBounds.getCenter())
       .to(viewRect.getCenter(), animationDuration)
-      .easing(TWEEN.Easing.Quadratic.InOut)
+      .easing(TWEEN.Easing.Quintic.InOut) // TWEAK EASING TYPE IF DESIRED
       .onUpdate((point) => {
         viewport.panTo(point, true);
       })
