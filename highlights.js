@@ -25,7 +25,7 @@ const playButton = document.querySelector('.play-button');
 let isPlaying = false;
 let nextHighlights = [];
 let currentHighlight = null;
-let timeout = 0;
+let timeoutId = 0;
 const defaultSpringAnimationTime = 1.2; // seconds
 
 // ----------
@@ -33,6 +33,7 @@ export function getHighlightBounds(highlight) {
   const imageRec = imageRecs[highlight.imageIndex];
   if (imageRec && imageRec.tiledImage) {
     const imageBounds = imageRec.tiledImage.getBounds();
+    // Note that we use width for both dimensions so our coordinates are square
     const highlightRect = new OpenSeadragon.Rect(
       imageRec.startX + highlight.x * imageBounds.width,
       imageRec.startY + highlight.y * imageBounds.width,
@@ -79,8 +80,8 @@ function startNextAnimation() {
       return;
     }
 
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
       startNextAnimation();
     }, betweenDuration);
   });
@@ -92,7 +93,7 @@ export function stopAnimation() {
   isPlaying = false;
   playButton.classList.remove('pause');
   TWEEN.removeAll();
-  clearTimeout(timeout);
+  clearTimeout(timeoutId);
 
   viewport.centerSpringX.animationTime = defaultSpringAnimationTime;
   viewport.centerSpringY.animationTime = defaultSpringAnimationTime;
@@ -137,8 +138,8 @@ function animateToRect(viewRect, onComplete) {
     viewport.zoomSpring.animationTime = animationSeconds;
     viewport.fitBounds(viewRect);
 
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
       onComplete();
     }, animationDuration);
   } else {
