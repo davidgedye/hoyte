@@ -1,23 +1,94 @@
 import { shuffle } from './util.js';
 import { imageRecs, viewer } from './main.js';
 
-const animationDuration = 15000; // milliseconds
-const betweenDuration = 2000; // milliseconds
+const animationDuration = 12000; // milliseconds
+const betweenDuration = 5000; // milliseconds
 
+// Hand built highlight rects to send the play button to interesting areas of some of the pages.
 export const highlights = [
   {
     imageIndex: 0,
-    x: 0.25,
-    y: 0.25,
-    width: 0.5,
-    height: 0.5
+    x: 0,
+    y: 0,
+    width: 1,
+    height: 1.4
   },
   {
-    imageIndex: 10,
-    x: 0.25,
-    y: 0.25,
-    width: 0.5,
-    height: 0.5
+    imageIndex: 2,
+    x: 0.15,
+    y: 0.4,
+    width: 0.6,
+    height: 0.4
+  },
+  {
+    imageIndex: 3,
+    x: 0,
+    y: 0,
+    width: 1,
+    height: 0.63
+  },
+  {
+    imageIndex: 5,
+    x: 0,
+    y: 0.4,
+    width: 1,
+    height: 1.05
+  },
+  {
+    imageIndex: 7,
+    x: 0.11,
+    y: 0.33,
+    width: 0.75,
+    height: 0.28 
+  },
+  {
+    imageIndex: 8,
+    x: 0,
+    y: 0.7,
+    width: 1,
+    height: 0.74
+  },
+  {
+    imageIndex: 18, // landscape mode
+    x: 0,
+    y: 0.22,
+    width: 0.68,
+    height: 0.58
+  },
+  {
+    imageIndex: 20, 
+    x: 0.16,
+    y: 0,
+    width: 0.55,
+    height: 0.85
+  },
+  {
+    imageIndex: 62, 
+    x: 0,
+    y: 0.45,
+    width: 1,
+    height: 0.6
+  },
+  {
+    imageIndex: 64, 
+    x: 0.2,
+    y: 0,
+    width: 0.8,
+    height: 1.5
+  },
+  {
+    imageIndex: 73, 
+    x: 0.12,
+    y: 0.16,
+    width: 0.73,
+    height: 0.44
+  },
+  {
+    imageIndex: 79, 
+    x: 0,
+    y: 0,
+    width: 2.1, // two images wide.
+    height: 1.5
   }
 ];
 
@@ -128,10 +199,11 @@ function animateToRect(viewRect, onComplete) {
   const imageWidthZoom = 1 / viewRect.width;
   const imageHeightZoom = 1 / viewBounds.getAspectRatio() / viewRect.height;
   const endZoom = Math.min(imageWidthZoom, imageHeightZoom);
-  const midZoom = Math.max(startZoom, endZoom) / 5;
+  const midZoom = Math.max(startZoom, endZoom) / 15; //Increase for more zoomout.
 
   let zoomTween;
-  if (startZoom < midZoom * 2) {
+  if (startZoom < midZoom * 2) { // Experiment with this number.
+    // Linear zoom
     const animationSeconds = animationDuration / 1000;
     viewport.centerSpringX.animationTime = animationSeconds;
     viewport.centerSpringY.animationTime = animationSeconds;
@@ -143,6 +215,7 @@ function animateToRect(viewRect, onComplete) {
       onComplete();
     }, animationDuration);
   } else {
+    // Zoom out then in
     zoomTween = new TWEEN.Tween({ logZoom: Math.log(startZoom) })
       .to({ logZoom: Math.log(midZoom) }, animationDuration / 2)
       .easing(TWEEN.Easing.Quadratic.InOut)
@@ -161,7 +234,7 @@ function animateToRect(viewRect, onComplete) {
 
     const panTween = new TWEEN.Tween(viewBounds.getCenter())
       .to(viewRect.getCenter(), animationDuration)
-      .easing(TWEEN.Easing.Quadratic.InOut)
+      .easing(TWEEN.Easing.Quintic.InOut) // TWEAK EASING TYPE IF DESIRED
       .onUpdate((point) => {
         viewport.panTo(point, true);
       })
