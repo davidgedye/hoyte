@@ -1,7 +1,7 @@
 import { dzis } from './data.js';
 import ImageRec from './ImageRec.js';
 import { prepareIntro } from './intro.js';
-import { showHighlights, overrideHighlights, highlights, getHighlightBounds, stopAnimation } from './highlights.js';
+import { showHighlights, highlights, getHighlightBounds, stopAnimation } from './highlights.js';
 import { shuffleArrangement } from './arrangements.js';
 import { isTouchDevice, hasMouse } from './util.js';
 
@@ -87,7 +87,6 @@ viewer.addHandler('open', () => {
   // Move the viewport to where the images will end up after the animation
   viewer.viewport.fitBounds(new OpenSeadragon.Rect(0, 0, maxX + xStride, maxY + yStride), true);
 
-  //if (showHighlights && (overrideHighlights == false)) {
   if (showHighlights) {
     // Add highlight overlays
     for (const highlight of highlights) {
