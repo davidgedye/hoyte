@@ -1,11 +1,13 @@
 import { dzis } from './data.js';
 import ImageRec from './ImageRec.js';
 import { prepareIntro } from './intro.js';
-import { highlights, getHighlightBounds, stopAnimation } from './highlights.js';
+import { showHighlights, highlights, getHighlightBounds, stopAnimation } from './highlights.js';
+import { shuffleArrangement } from './arrangements.js';
 import { isTouchDevice, hasMouse } from './util.js';
 
 // Configuration for arranging images
-const showHighlights = false;
+
+
 const rowStarts = [0, 3, 6, 8, 16, 19, 29, 41, 55, 61, 68];
 const rotatedIndexes = [18, 24];
 const xStride = 1.1;
@@ -146,6 +148,20 @@ viewer.addHandler('canvas-key', (event) => {
 
 // Add our own key handling for left/right to move between images
 window.addEventListener('keydown', (event) => {
+  // Space triggers the shuffle experiment; Arrow keys move between images
+  if (event.code === 'Space') {
+    event.preventDefault();
+    console.log('Space key detected');
+    // Run the shuffle experiment (non-blocking)
+    try {
+      console.log('Starting shuffleArrangement');
+      shuffleArrangement();
+    } catch (e) {
+      console.error('shuffleArrangement failed:', e);
+    }
+    return;
+  }
+
   if (!['ArrowLeft', 'ArrowRight'].includes(event.code)) {
     return;
   }

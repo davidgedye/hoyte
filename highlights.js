@@ -1,11 +1,23 @@
 import { shuffle } from './util.js';
-import { imageRecs, viewer } from './main.js';
+import { imageRecs, viewer} from './main.js';
+
+export const showHighlights = false; // Show a bounding box for each highlight
+export const overrideHighlights = true; // When True every image is a highlight
 
 const animationDuration = 12000; // milliseconds
 const betweenDuration = 5000; // milliseconds
 
-// Hand built highlight rects to send the play button to interesting areas of some of the pages.
-export const highlights = [
+// Generated highlights for all 81 images when overrideHighlights is true
+// Hand built highlight rects for specific areas when overrideHighlights is false
+
+export const highlights = overrideHighlights ? Array.from({ length: 81 }, (_, i) => ({
+  // This will be wrong for the two rotated images, but it's close enough for demo purposes.
+  imageIndex: i,
+  x: 0,
+  y: 0,
+  width: 1,
+  height: 1.5
+})) : [
   {
     imageIndex: 0,
     x: 0,
@@ -199,7 +211,7 @@ function animateToRect(viewRect, onComplete) {
   const imageWidthZoom = 1 / viewRect.width;
   const imageHeightZoom = 1 / viewBounds.getAspectRatio() / viewRect.height;
   const endZoom = Math.min(imageWidthZoom, imageHeightZoom);
-  const midZoom = Math.max(startZoom, endZoom) / 15; //Increase for more zoomout.
+  const midZoom = Math.max(startZoom, endZoom) / 5; //Increase for more zoomout.
 
   let zoomTween;
   if (startZoom < midZoom * 2) { // Experiment with this number.
