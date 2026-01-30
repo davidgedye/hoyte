@@ -35,12 +35,39 @@
 - Normalized existing files from CRLF to LF
 - Prevents spurious diffs when working across Windows/Linux/WSL environments
 
+### 4. Squarespace Embedding (PR #32 - Merged)
+**Goal:** Embed the viewer in a Squarespace site.
+
+**Approach:** iframe embedding (simplest option)
+- Tiles remain hosted on GitHub Pages
+- iframe embedded in Squarespace Code Block
+
+**Squarespace Code Block:**
+```html
+<iframe
+  src="https://davidgedye.github.io/hoyte/"
+  style="width:100vw; height:80vh; border:none; margin-left:calc(-50vw + 50%); display:block;">
+</iframe>
+```
+The `margin-left: calc(-50vw + 50%)` trick makes the iframe break out of Squarespace's narrow content container to full viewport width.
+
+**Code changes for better embed experience:**
+- Centered instruction message vertically (`main.css`: `top: 50%` + `transform: translateY(-50%)`)
+- Hide full-screen button when embedded in iframe (`main.js`: detect `window.self !== window.top`)
+
+**Known limitations of iframe approach:**
+- Full-screen button doesn't work (browser security restriction) - now hidden when embedded
+- No deep linking to specific page/zoom state
+- Potential touch gesture conflicts (tested OK on desktop and mobile)
+
 ## Files Modified
-- `main.js` - Major refactor for responsive layout
-- `.gitattributes` - New file for line ending enforcement
+- `main.js` - Responsive layout + iframe detection
+- `main.css` - Centered intro message
+- `.gitattributes` - Line ending enforcement
 
 ## Git History
 ```
+1abf76b Improve embedded iframe experience
 b40288c Normalize line endings to LF
 6ccfcd6 Add responsive grid layout that adapts to viewport aspect ratio
 ```
