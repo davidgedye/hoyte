@@ -18,8 +18,9 @@ body {
 .intro-container {
   position: absolute;
   width: 100%;
-  top: 50px;
+  top: 50%;
   left: 0;
+  transform: translateY(-50%);
   pointer-events: none;
 }
 

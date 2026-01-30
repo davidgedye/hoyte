@@ -205,12 +205,15 @@ const imageSpecs = imageRecs.map((imageRec, index) => {
   return imageSpec;
 });
 
+// Detect if embedded in an iframe
+const isEmbedded = window.self !== window.top;
+
 // Create the viewer
 const options = {
   id: 'osd-container',
   prefixUrl: 'https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/images/',
   drawer: 'canvas',
-  showFullPageControl: !isTouchDevice || hasMouse,
+  showFullPageControl: !isEmbedded && (!isTouchDevice || hasMouse),
   gestureSettingsMouse: {
     clickToZoom: false
   },
