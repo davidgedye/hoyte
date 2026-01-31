@@ -1,4 +1,4 @@
-# Claude Code Session - January 29, 2026
+# Claude Code Session - January 29-30, 2026
 
 ## Summary of Work Done
 
@@ -42,31 +42,60 @@
 - Tiles remain hosted on GitHub Pages
 - iframe embedded in Squarespace Code Block
 
-**Squarespace Code Block:**
-```html
-<iframe
-  src="https://davidgedye.github.io/hoyte/"
-  style="width:100vw; height:80vh; border:none; margin-left:calc(-50vw + 50%); display:block;">
-</iframe>
-```
-The `margin-left: calc(-50vw + 50%)` trick makes the iframe break out of Squarespace's narrow content container to full viewport width.
-
 **Code changes for better embed experience:**
 - Centered instruction message vertically (`main.css`: `top: 50%` + `transform: translateY(-50%)`)
-- Hide full-screen button when embedded in iframe (`main.js`: detect `window.self !== window.top`)
+- Hide full-screen button when embedded in iframe (`viewer.js`: detect `window.self !== window.top`)
 
 **Known limitations of iframe approach:**
 - Full-screen button doesn't work (browser security restriction) - now hidden when embedded
 - No deep linking to specific page/zoom state
 - Potential touch gesture conflicts (tested OK on desktop and mobile)
 
+### 5. Repo Restructuring for Multiple Manuscripts (PR #35 - Merged, closes #34)
+**Goal:** Generalize code to support multiple manuscripts with shared viewer code.
+
+**New Structure:**
+```
+hoyte/
+├── shared/                 # Shared viewer code
+│   ├── viewer.js           # Parameterized initViewer(dzis, config)
+│   ├── main.css
+│   ├── ImageRec.js
+│   ├── util.js
+│   ├── intro.js
+│   ├── highlights.js
+│   ├── arrangements.js
+│   └── img/
+├── util/                   # Build tools
+│   └── collect.js
+├── 1956expedition/         # First manuscript
+│   ├── index.html          # Entry point
+│   ├── data.js             # DZI metadata
+│   ├── config.js           # Manuscript-specific config
+│   └── jpgs/               # Tile images
+├── EMBEDDING.md            # Squarespace embed instructions
+└── (future: cambridge/, etc.)
+```
+
+**Key Changes:**
+- `shared/viewer.js` exports `initViewer(dzis, config)` function
+- Each manuscript has minimal `index.html` that imports shared code and passes its config
+- `config.js` contains manuscript-specific settings (rowStarts, rotatedIndexes, etc.)
+- URL changed from `.../hoyte/` to `.../hoyte/1956expedition/`
+
 ## Files Modified
-- `main.js` - Responsive layout + iframe detection
-- `main.css` - Centered intro message
+- `shared/viewer.js` - Main viewer logic (parameterized)
+- `shared/main.css` - Centered intro message
+- `shared/*.js` - Updated import paths
+- `1956expedition/index.html` - Minimal entry point
+- `1956expedition/config.js` - Manuscript configuration
+- `EMBEDDING.md` - Squarespace embed documentation
 - `.gitattributes` - Line ending enforcement
 
 ## Git History
 ```
+a2536ec Add embedding documentation for Squarespace
+3ac0a81 Restructure repo for multiple manuscripts
 1abf76b Improve embedded iframe experience
 b40288c Normalize line endings to LF
 6ccfcd6 Add responsive grid layout that adapts to viewport aspect ratio
@@ -74,12 +103,16 @@ b40288c Normalize line endings to LF
 
 ## Configuration Reference
 
-### Layout Constants (main.js)
+### Manuscript Config (1956expedition/config.js)
 ```javascript
-const rowStarts = [0, 3, 6, 8, 16, 19, 29, 41, 55, 61, 68];  // Legacy layout row breaks
-const rotatedIndexes = [18, 24];  // Images rotated 90°
-const xStride = 1.1;  // Horizontal spacing between images
-const yStride = 1.6;  // Vertical spacing between rows
+export default {
+  title: 'Cambridge 1956 Hannibal Expedition',
+  rowStarts: [0, 3, 6, 8, 16, 19, 29, 41, 55, 61, 68],
+  rotatedIndexes: [18, 24],
+  defaultLayout: 'responsive',
+  showHighlights: false,
+  highlights: []
+};
 ```
 
 ### Keyboard Shortcuts
@@ -87,12 +120,28 @@ const yStride = 1.6;  // Vertical spacing between rows
 - **Space** - Shuffle arrangement (experimental)
 - **Arrow Left/Right** - Navigate between images
 
+## Squarespace Embedding
+
+See `EMBEDDING.md` for full details.
+
+```html
+<iframe
+  src="https://davidgedye.github.io/hoyte/1956expedition/"
+  style="width:100vw; height:80vh; border:none; margin-left:calc(-50vw + 50%); display:block;">
+</iframe>
+```
+
 ## Testing Notes
+- Local dev server: `python3 -m http.server 8000` → http://localhost:8000/1956expedition/
 - Test responsive layout by opening at different window sizes and refreshing
 - Press "L" to compare with legacy rowStarts layout
 - Rotated images should have space above/below and not extend beyond grid boundary
 
 ## URLs
-- Local dev server: `python3 -m http.server 8000` → http://localhost:8000
-- Production: https://davidgedye.github.io/hoyte/
+- Local dev: http://localhost:8000/1956expedition/
+- Production: https://davidgedye.github.io/hoyte/1956expedition/
 - Repository: https://github.com/davidgedye/hoyte
+
+## Next Steps
+- Scan and add second manuscript (cambridge)
+- Create `cambridge/` folder with its own data.js, config.js, and jpgs/
