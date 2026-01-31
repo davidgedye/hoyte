@@ -1,5 +1,5 @@
 import { shuffle } from './util.js';
-import { imageRecs, viewer } from './main.js';
+import { imageRecs, viewer } from './viewer.js';
 
 // This file is for experimenting with animating the position of OSD images.
 // Before I get into more complex positioning I want to test something simple... a shuffle of the images.

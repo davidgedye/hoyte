@@ -1,5 +1,5 @@
 import { shuffle } from './util.js';
-import { imageRecs, viewer} from './main.js';
+import { imageRecs, viewer } from './viewer.js';
 
 export const showHighlights = false; // Show a bounding box for each highlight
 export const overrideHighlights = true; // When True every image is a highlight

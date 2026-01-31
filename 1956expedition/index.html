@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>Cambridge 1956 Hannibal Expedition</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" type="text/css" href="main.css" />
+    <link rel="stylesheet" type="text/css" href="../shared/main.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/openseadragon.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/20.0.3/tween.umd.js"></script>
   </head>
@@ -21,6 +21,12 @@
       </div>
     </div>
     <footer>© 2025 John Hoyte</footer>
-    <script type="module" src="main.js"></script>
+    <script type="module">
+      import { initViewer } from '../shared/viewer.js';
+      import { dzis } from './data.js';
+      import config from './config.js';
+
+      initViewer(dzis, config);
+    </script>
   </body>
 </html>
