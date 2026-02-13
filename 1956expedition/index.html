@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Cambridge 1956 Hannibal Expedition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="../shared/main.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/openseadragon/5.0.1/openseadragon.min.js"></script>
+  </head>
+  <body>
+    <div id="osd-container"></div>
+    <img class="spray-image" src="spray.png" />
+    <div class="intro-container">
+      <div class="intro intro-desktop">
+        To zoom use your scroll wheel or two fingers on your trackpad
+      </div>
+      <div class="intro intro-mobile">Pinch the screen to zoom</div>
+      <div class="intro intro-both">
+        To zoom use your scroll wheel or two fingers on your trackpad
+      </div>
+    </div>
+    <footer>© 2025 John Hoyte</footer>
+    <script type="module">
+      import { initViewer } from '../shared/viewer.js';
+      import { dzis } from './data.js';
+      import config from './config.js';
+
+      initViewer(dzis, config);
+    </script>
+  </body>
+</html>

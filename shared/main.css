@@ -1,0 +1,64 @@
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+#osd-container {
+  width: 100vw;
+  height: 100dvh;
+  background: white;
+}
+
+.intro-container {
+  position: absolute;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.intro {
+  display: none;
+  width: fit-content;
+  max-width: 92.5%;
+  margin: 0 auto;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  color: #333;
+  z-index: 1000;
+  box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.spray-image {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  height: 10%;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+footer {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.5);
+}
