@@ -10,12 +10,14 @@ A static website for viewing historical manuscripts and scrapbooks from [John Ho
 - **URL:** [davidgedye.github.io/hoyte/1956expedition/](https://davidgedye.github.io/hoyte/1956expedition/)
 - Journal and scrapbook documenting the first trip of the "Cambridge Hannibalians" to investigate the different passes across the Alps which Hannibal may have used in 218 BCE.
 - 81 pages
-- A PDF version of this manuscript is available at "https://davidgedye.github.io/hoyte/1956expedition/Cambridge%201956%20Hannibal%20Expedition.pdf"
+- A PDF version of this manuscript is available at "https://davidgedye.github.io/hoyte/1956expedition/1956expedition.pdf"
 
 
 ### Cambridge Undergraduate Scrapbook
 - **URL:** [davidgedye.github.io/hoyte/cambridge/](https://davidgedye.github.io/hoyte/cambridge/)
+- Scrapbook from John Hoyte's time as an undergraduate at Cambridge, 1953-1957
 - 42 pages
+- A PDF version of this manuscript is available at "https://davidgedye.github.io/hoyte/cambridge/cambridge.pdf"
 
 ## Project Structure
 
@@ -26,7 +28,6 @@ hoyte/
 │   ├── main.css         # Shared styles
 │   ├── ImageRec.js      # Image record class
 │   ├── arrangements.js  # Layout arrangements
-│   ├── highlights.js    # Highlight overlay support
 │   ├── intro.js         # Introduction message handling
 │   └── util.js          # Utility functions
 ├── 1956expedition/      # First manuscript
@@ -39,10 +40,13 @@ hoyte/
 │   ├── config.js
 │   ├── data.js
 │   └── jpgs/
-├── util/                # Processing utilities
-│   ├── crop_margins.py  # Image preprocessing
-│   ├── collect.js       # DZI metadata collector
-│   └── dzi.js           # DZI file list
+├── util/                       # Processing utilities
+│   ├── process_scans.sh        # Full scan processing pipeline
+│   ├── crop_margins.py         # Autocrop white margins
+│   ├── normalize_backgrounds.py # Background color normalization
+│   ├── measure_backgrounds.py  # Background color measurement
+│   ├── collect.js              # DZI metadata collector
+│   └── dzi.js                  # DZI file list
 └── EMBEDDING.md         # Instructions for embedding in websites
 ```
 
