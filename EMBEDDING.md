@@ -87,6 +87,12 @@ This hides the Squarespace footer on this page (optional but recommended for a c
 
 Use the script above with this URL as `iframe.src`.
 
+### Cambridge Collection
+
+**URL:** `https://davidgedye.github.io/hoyte/cambridge/`
+
+Use the script above with this URL as `iframe.src`.
+
 ---
 
 ## Notes
